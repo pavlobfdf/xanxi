@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para mi novia</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-color: #2b0010;
+            --card-color: #FDF5E6;
+            --btn-yes: #4CAF50;
+            --btn-no: #f44336;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--bg-color);
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* --- FONDO ANIMADO --- */
+        .bg-heart {
+            position: absolute;
+            color: #d6336c;
+            font-size: 2rem;
+            filter: blur(4px);
+            opacity: 0.3;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        /* --- PANTALLA DE PREGUNTA (INTRO) --- */
+        #intro-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100; /* Por encima de todo */
+            text-align: center;
+        }
+
+        .intro-title {
+            font-size: 2.5rem;
+            color: #ff99cc;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            margin-bottom: 2rem;
+            font-weight: 800;
+            padding: 0 20px;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            position: relative; /* Necesario para mover el botón No */
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-yes {
+            background-color: var(--card-color);
+            color: #d6336c;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1);
+            background-color: #fff;
+        }
+
+        .btn-no {
+            background-color: #3e2723;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- CARTA PRINCIPAL (Oculta al inicio) --- */
+        .San_Valentin {
+            display: none; /* OCULTO POR DEFECTO */
+            position: relative;
+            width: 90%;
+            max-width: 550px;
+            background: var(--card-color);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            padding: 2rem;
+            box-sizing: border-box;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            /* Animación de entrada */
+            animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popUp {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* ... (ESTILOS ORIGINALES DEL ÁRBOL) ... */
+        .title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #d6336c;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: relative;
+        }
+
+        .text-area {
+            width: 45%;
+            font-size: 0.85rem;
+            color: #4a4a4a;
+            line-height: 1.6;
+            z-index: 2;
+        }
+
+        .signature {
+            color: #d6336c;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 10px;
+        }
+
+        .tree-container {
+            width: 55%;
+            height: 320px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .trunk {
+            width: 14px;
+            height: 90px;
+            background: linear-gradient(90deg, #3E2723, #5D4037);
+            border-radius: 4px;
+            position: absolute;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        .branch-left {
+            position: absolute;
+            width: 8px;
+            height: 50px;
+            background: #5D4037;
+            bottom: 50px;
+            left: -4px;
+            transform: rotate(-40deg);
+            border-radius: 4px;
+            z-index: 0;
+        }
+
+        .branch-right {
+            position: absolute;
+            width: 8px;
+            height: 50px;
+            background: #5D4037;
+            bottom: 50px;
+            right: -4px;
+            transform: rotate(40deg);
+            border-radius: 4px;
+            z-index: 0;
+        }
+
+        .tree-canopy {
+            position: absolute;
+            bottom: 60px;
+            width: 220px;
+            height: 200px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .leaf {
+            position: absolute;
+            font-size: 10px;
+            transform-origin: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        @keyframes wind-sway {
+            0%, 100% { transform: rotate(var(--rot)) scale(1); }
+            50% { transform: rotate(calc(var(--rot) + 8deg)) scale(1.1); }
+        }
+
+        .falling-leaf {
+            position: absolute;
+            font-size: 12px;
+            z-index: 3;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes sway-fall {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 1; }
+            25% { transform: translateY(60px) translateX(25px) rotate(45deg); }
+            50% { transform: translateY(120px) translateX(-25px) rotate(90deg); }
+            75% { transform: translateY(180px) translateX(10px) rotate(135deg); }
+            100% { transform: translateY(240px) translateX(0) rotate(180deg); opacity: 0; }
+        }
+
+        .bottom-message {
+            margin-top: 2rem;
+            width: 100%;
+            border-top: 1px solid #e0c9c9;
+            padding-top: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+            text-align: center;
+        }
+
+        .highlight {
+            color: #d6336c;
+            font-weight: 700;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-heart" style="top: 10%; left: 5%;">❤</div>
+    <div class="bg-heart" style="top: 20%; right: 10%; font-size: 4rem;">❤</div>
+    <div class="bg-heart" style="bottom: 15%; left: 15%;">❤</div>
+    <div class="bg-heart" style="bottom: 5%; right: 5%;">❤</div>
+
+    <div id="intro-screen">
+        <div class="intro-title">XANXIIII¿Quieres ser mi<br>San Valentín? 🌹</div>
+        <div class="btn-container">
+            <button class="btn btn-yes" onclick="aceptaValentin()">SI</button>
+            <button class="btn btn-no" id="btnNo" onmouseover="mueveBoton()" onclick="mueveBoton()">NO</button>
+        </div>
+    </div>
+
+    <div class="San_Valentin" id="mainCard">
+        <div class="title">para mi xanxi bella</div>
+
+        <div class="content-wrapper">
+            <div class="text-area">
+                <p>xanxi<br>
+                Si pudiera elegir un lugar seguro, sería a tu lado.</p>
+                <p>Cuanto más tiempo estoy contigo, mas me gusta estar a tu lado</p>
+                <span class="signature">— Te Amo</span>
+            </div>
+
+            <div class="tree-container">
+                <div class="tree-canopy" id="treeCanopy"></div>
+                
+                <div class="trunk">
+                    <div class="branch-left"></div>
+                    <div class="branch-right"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-message">
+            por mas noches de lol juntos<br>
+            <span class="highlight">te amooooo</span>
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DE LA PREGUNTA ---
+        function aceptaValentin() {
+            // Ocultar pantalla de intro
+            document.getElementById('intro-screen').style.display = 'none';
+            // Mostrar carta
+            const card = document.getElementById('mainCard');
+            card.style.display = 'flex';
+        }
+
+        function mueveBoton() {
+            // Truco: Si intentan dar click en NO, el botón se mueve a un lugar aleatorio
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            const newWidth = Math.random() * (width - 100);
+            const newHeight = Math.random() * (height - 50);
+
+            const btnNo = document.getElementById('btnNo');
+            btnNo.style.position = 'absolute';
+            btnNo.style.left = newWidth + 'px';
+            btnNo.style.top = newHeight + 'px';
+        }
+
+        // --- LÓGICA DEL ÁRBOL (TU CÓDIGO ANTERIOR) ---
+        const treeCanopy = document.getElementById('treeCanopy');
+        const colors = ['#880e4f', '#b71c1c', '#d32f2f', '#f44336', '#e91e63', '#f06292', '#ffcdd2', '#ff80ab'];
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createDenseCluster(centerX, centerY, spreadX, spreadY, count) {
+            for(let i=0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤';
+                heart.classList.add('leaf');
+                const angle = Math.random() * Math.PI * 2;
+                const r = Math.sqrt(Math.random()); 
+                const x = centerX + (r * Math.cos(angle) * spreadX);
+                const y = centerY + (r * Math.sin(angle) * spreadY);
+                const size = random(8, 18); 
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const rot = random(-40, 40);
+                let zIndex = 1;
+                if(colors.indexOf(color) > 4) zIndex = 10; 
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+                heart.style.fontSize = `${size}px`;
+                heart.style.color = color;
+                heart.style.zIndex = zIndex;
+                heart.style.setProperty('--rot', `${rot}deg`);
+                heart.style.transform = `rotate(${rot}deg)`;
+                heart.style.animation = `wind-sway ${random(2, 5)}s infinite alternate ease-in-out`;
+                treeCanopy.appendChild(heart);
+            }
+        }
+
+        function createTree() {
+            createDenseCluster(110, 130, 70, 50, 120);
+            createDenseCluster(110, 70, 60, 50, 100);
+            createDenseCluster(50, 110, 40, 40, 60);
+            createDenseCluster(170, 110, 40, 40, 60);
+            createDenseCluster(110, 100, 90, 80, 50);
+        }
+
+        function createFallingLeaf() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤';
+            heart.classList.add('falling-leaf');
+            const startX = random(20, 200);
+            const startY = random(50, 150);
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const size = random(10, 15);
+            const duration = random(3, 6);
+            heart.style.left = `${startX}px`;
+            heart.style.top = `${startY}px`;
+            heart.style.color = color;
+            heart.style.fontSize = `${size}px`;
+            heart.style.animation = `sway-fall ${duration}s linear forwards`;
+            treeCanopy.appendChild(heart);
+            setTimeout(() => heart.remove(), duration * 1000);
+        }
+
+        createTree();
+        setInterval(createFallingLeaf, 300);
+
+    </script>
+</body>
+</html>
